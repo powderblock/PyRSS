@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import feedparser, os, sys
 
 try:
@@ -5,14 +6,21 @@ try:
 except:
         import pyreadline as readline
 
-path = os.path.join(os.path.expanduser('~'), '.sites')
-
-rss = feedparser.parse('http://rss.cnn.com/rss/cnn_topstories.rss')
+path = os.path.join(os.path.expanduser('~'), 'sites.txt')
 
 def showRSS():
     try:
             file = open(path, 'r')
             print("File found at "+path)
+            for line in file:
+                site = {'name:': 'foo', 'site': line};
+                site = feedparser.parse(site['site'])
+                print(line)
+                for i in range(0, 3):
+                        print(site['entries'][i]['title'])
+                        print(site['entries'][i]['link'])
+
+                print("\n")
             file.close()
     except:
         print("No file found at "+path)
@@ -33,5 +41,6 @@ def menu():
 
         else: print("\n~That is not a valid option!~")
 
-menu()
-#print(rss['entries'][0]['title'])
+showRSS()
+#menu()
+
