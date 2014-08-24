@@ -18,7 +18,6 @@ def showRSS():
                 print(line)
                 for i in range(0, 3):
                         print(site['entries'][i]['title'])
-                        print(site['entries'][i]['link'])
 
                 print("\n")
             file.close()
