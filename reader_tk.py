@@ -24,7 +24,7 @@ class Program(Frame):
                 addRSSButton = Button(text="+", command = self.create_window)
                 addRSSButton.pack(side="right")
 
-        except FileNotFoundError:
+        except (OSError, IOError) as e:
             print("No file found at: "+path)
     def callback(self, text): webbrowser.get('windows-default').open(text)
     def create_window(self):
