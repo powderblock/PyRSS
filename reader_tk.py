@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import feedparser, os, sys, webbrowser
-from Tkinter import *
+
+try: from Tkinter import * # python2
+except: from tkinter import * # python3
 
 try: import readline
 except: import pyreadline as readline
@@ -33,7 +35,7 @@ class Program(Frame):
         global e
         e = Entry(t, width=50)
         e.pack(side="left")
-    def addNewFeed(self): print e.get()
+    def addNewFeed(self): print(e.get())
 if __name__ == "__main__":
     root = Tk()
     root.wm_title("PyRSS")

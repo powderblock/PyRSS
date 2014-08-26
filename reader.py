@@ -2,27 +2,28 @@
 import feedparser, os, sys
 
 try:
-        import readline
+    import readline
 except:
-        import pyreadline as readline
+    import pyreadline as readline
 
 path = os.path.join(os.path.expanduser('~'), 'sites.txt')
 
 def showRSS():
     try:
-            file = open(path, 'r')
-            print("File found at "+path)
-            for line in file:
-                site = {'name:': 'foo', 'site': line};
-                site = feedparser.parse(site['site'])
-                print(line)
-                for i in range(0, 3):
-                        print(site['entries'][i]['title'])
+        file = open(path, 'r')
+        print("File found at "+path)
+        for line in file:
+            site = {'name:': 'foo', 'site': line};
+            site = feedparser.parse(site['site'])
+            print(line)
+            for i in range(0, 3):
+                    print(site['entries'][i]['title'])
 
-                print("\n")
-            file.close()
-    except:
+            print("\n")
+        file.close()
+    except FileNotFoundError:
         print("No file found at "+path)
+
 def addRSS():
     print("You pressed two!")
 
@@ -41,5 +42,3 @@ def menu():
         else: print("\n~That is not a valid option!~")
 
 showRSS()
-#menu()
-
