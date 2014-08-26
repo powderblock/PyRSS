@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-import feedparser, os, sys, webbrowser
+import feedparser, os, sys, webbrowser, errno
 from Tkinter import *
 
 try: import readline
@@ -25,7 +25,8 @@ class Program(Frame):
                 addRSSButton.pack(side="right")
 
         except (OSError, IOError) as e:
-            print("No file found at: "+path)
+            if (errno.ENOENT == e.errno): 
+                print("No file found at: "+path)
     def callback(self, text): webbrowser.get('windows-default').open(text)
     def create_window(self):
         t = Toplevel(self)
