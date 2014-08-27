@@ -12,7 +12,7 @@ except: import pyreadline as readline
 path = os.path.join(os.path.expanduser('~'), 'sites.txt')
 
 urls = []
-urlsFull = []
+buttons = []
 
 root = Tk()
 root.wm_title("PyRSS")
@@ -22,7 +22,6 @@ try:
     file = open(path, 'r')
     # Go through each line in sites.txt
     for line in file:
-        urlsFull.append(line)
         line = line.strip()
         if line not in urls:
             urls.append(line)
@@ -31,25 +30,26 @@ try:
             # Create labels for each site gotten out of the file
             website = Label(root, text=line)
             website.pack()
-            # Top three entries from the RSS feed
             num = min(3, len(site['entries']))
+            # Top three entries from the RSS feed
             for entry in site['entries'][:num]:
                 title = entry['title']
                 callback = lambda link=entry['link']: openSite(link)
-                buttonName = Button(root, text=title, command=callback)
-                buttonName.pack(padx=30, pady=15)
+                buttons.append(Button(root, text=title, command=callback))
+                buttons[-1].pack(padx=30, pady=15)
+            # When we're read all the entries, inform the user
             noMoreEntries = Label(root, text="No more entries!")
             noMoreEntries.pack(padx=5, pady=5)
     file.close()
     # Make button for adding RSS feeds to 
-    addRSSButton = Button(root, text="+", command = lambda: create_window())
+    addRSSButton = Button(root, text="+", command=lambda: create_window())
     addRSSButton.pack(side="right")
 
 except (OSError, IOError) as e:
     # Confirm the error type
     if (errno.ENOENT == e.errno):
         # Tell the user the file was not found.
-        print("No file found at: "+path)
+        print("No file found at: " + path)
 
 def openSite(text): webbrowser.get().open(text)
 
@@ -59,7 +59,7 @@ def create_window():
     feed = Toplevel()
     feed.wm_title("Add new RSS feed")
 
-    newFeedButton = Button(feed, text="Add New Feed", command = lambda: addNewFeed())
+    newFeedButton = Button(feed, text="Add New Feed", command=lambda: addNewFeed())
     newFeedButton.pack(side="right")
 
     global newFeedGet
@@ -67,10 +67,9 @@ def create_window():
     newFeedGet.pack(side="left")
 
 def addNewFeed():
-    add = open(path, 'w')
-    for i in range(0, len(urlsFull)):
-        add.write(urlsFull[i])
-    add.write("\n"+newFeedGet.get())
-    feed.destroy()
+    # Open the file for appending and add the new line to it
+    with open(path, 'a') as add:
+        add.writeline(newFeedGet.get())
+        feed.destroy()
 
-mainloop()
+root.mainloop()
