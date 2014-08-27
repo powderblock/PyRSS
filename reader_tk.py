@@ -32,15 +32,14 @@ try:
             website = Label(root, text=line)
             website.pack()
             # Top three entries from the RSS feed
-            try:
-                for i in range(0, 3):
-                    buttonName = i
-                    buttonName = Button(root, text=site['entries'][i]['title'], command = lambda i=i: openSite(site['entries'][i]['link']))
-                    buttonName.pack(padx=30, pady=15)
-
-            except IndexError:
-                noMoreEntries = Label(root, text="RSS feed you have entered ("+line+") does not have at least three entries!")
-                noMoreEntries.pack(padx=5, pady=5)
+            num = min(3, len(site['entries']))
+            for entry in site['entries'][:num]:
+                title = entry['title']
+                callback = lambda link=entry['link']: openSite(link)
+                buttonName = Button(root, text=title, command=callback)
+                buttonName.pack(padx=30, pady=15)
+            noMoreEntries = Label(root, text="No more entries!")
+            noMoreEntries.pack(padx=5, pady=5)
     file.close()
     # Make button for adding RSS feeds to 
     addRSSButton = Button(root, text="+", command = lambda: create_window())
