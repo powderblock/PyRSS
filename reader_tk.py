@@ -22,20 +22,24 @@ try:
     file = open(path, 'r')
     # Go through each line in sites.txt
     for line in file:
-        urlsFull.append(line)
-        line = line.strip()
-        if line not in urls:
-            urls.append(line)
-            # Feed line found in file to feedparser
-            site = feedparser.parse(line)
-            # Create labels for each site gotten out of the file
-            website = Label(root, text=line)
-            website.pack()
-            # Top three entries from the RSS feed
-            for i in range(0, 3):
-                buttonName = i
-                buttonName = Button(root, text=site['entries'][i]['title'], command = lambda i=i: openSite(site['entries'][i]['link']))
-                buttonName.pack(padx=30, pady=15)
+    urlsFull.append(line)
+    line = line.strip()
+    if line not in urls:
+        urls.append(line)
+        # Feed line found in file to feedparser
+        site = feedparser.parse(line)
+        # Create labels for each site gotten out of the file
+        website = Label(root, text=line)
+        website.pack()
+        # Top three entries from the RSS feed
+        try:
+        for i in range(0, 3):
+            buttonName = i
+            buttonName = Button(root, text=site['entries'][i]['title'], command = lambda i=i: openSite(site['entries'][i]['link']))
+            buttonName.pack(padx=30, pady=15)
+
+        except IndexError:
+        print(" z")
     file.close()
     # Make button for adding RSS feeds to 
     addRSSButton = Button(root, text="+", command = lambda: create_window())
@@ -44,8 +48,8 @@ try:
 except (OSError, IOError) as e:
     # Confirm the error type
     if (errno.ENOENT == e.errno):
-        # Tell the user the file was not found.
-        print("No file found at: "+path)
+    # Tell the user the file was not found.
+    print("No file found at: "+path)
 
 def openSite(text): webbrowser.get().open(text)
 
@@ -65,7 +69,7 @@ def create_window():
 def addNewFeed():
     add = open(path, 'w')
     for i in range(0, len(urlsFull)):
-        add.write(urlsFull[i])
+    add.write(urlsFull[i])
     add.write("\n"+newFeedGet.get())
     feed.destroy()
 
