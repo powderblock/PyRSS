@@ -22,8 +22,8 @@ try:
     file = open(path, 'r')
     # Go through each line in sites.txt
     for line in file:
-        line = line.strip()
         urlsFull.append(line)
+        line = line.strip()
         if line not in urls:
             urls.append(line)
             # Feed line found in file to feedparser
@@ -55,11 +55,11 @@ def create_window():
     feed = Toplevel()
     feed.wm_title("Add new RSS feed")
 
-    newFeedButton = Button(t, text="Add New Feed", command = lambda: addNewFeed())
+    newFeedButton = Button(feed, text="Add New Feed", command = lambda: addNewFeed())
     newFeedButton.pack(side="right")
 
     global newFeedGet
-    newFeedGet = Entry(t, width=50)
+    newFeedGet = Entry(feed, width=50)
     newFeedGet.pack(side="left")
 
 def addNewFeed():
@@ -67,5 +67,6 @@ def addNewFeed():
     for i in range(0, len(urlsFull)):
         add.write(urlsFull[i])
     add.write("\n"+newFeedGet.get())
+    feed.destroy()
 
 mainloop()
