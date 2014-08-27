@@ -13,6 +13,8 @@ path = os.path.join(os.path.expanduser('~'), 'sites.txt')
 
 urls = []
 urlsFull = []
+buttons = []
+buttonURLS = []
 
 root = Tk()
 root.wm_title("PyRSS")
@@ -34,12 +36,16 @@ try:
             # Top three entries from the RSS feed
             try:
                 for i in range(0, 3):
-                    buttonName = i
-                    buttonName = Button(root, text=site['entries'][i]['title'], command = lambda i=i: openSite(site['entries'][i]['link']))
-                    buttonName.pack(padx=30, pady=15)
+                    buttons.append("button"+str(i))
+                    title = site['entries'][i]['title']
+                    link = site['entries'][i]['link']
+                    callback = lambda link=link: openSite(link)
+                    buttonURLS.append(link)
+                    buttons[i] = Button(root, text=title, command = callback)
+                    buttons[i].pack(padx=30, pady=15)
 
             except IndexError:
-                noMoreEntries = Label(root, text="RSS feed you have entered ("+line+") does not have at least three entries!")
+                noMoreEntries = Label(root, text="RSS feed you have entered ("+line+") does not have at least three valid entries!")
                 noMoreEntries.pack(padx=5, pady=5)
     file.close()
     # Make button for adding RSS feeds to 
@@ -74,4 +80,4 @@ def addNewFeed():
     add.write("\n"+newFeedGet.get())
     feed.destroy()
 
-mainloop()
+root.mainloop()
