@@ -26,18 +26,20 @@ path = os.path.join(datadir, "sites.txt")
 urls = []
 buttons = []
 text = []
-
-root = Tk()
-root.wm_title("PyRSS")
 addRSSButton = None
 refreshRSSButton = None
 noMoreEntries = []
 websites = []
+width = 400
+height = 600
+toolbar_height = 30
 
 
 def mainGUI(text):
     global addRSSButton, refreshRSSButton, noMoreEntries
-    global websites, buttons, urls
+    global websites, buttons, urls, frame
+
+    size = root.size()
     # Go through each line in sites.txt
     for line in text:
         line = line.strip()
@@ -49,7 +51,7 @@ def mainGUI(text):
         # Feed line found in file to feedparser
         site = feedparser.parse(line)
         # Create labels for each site gotten out of the file
-        websites.append(Label(root, text=line))
+        websites.append(Label(frame, text=line))
         websites[-1].pack()
 
         num = min(3, len(site['entries']))
@@ -57,15 +59,15 @@ def mainGUI(text):
         for entry in site['entries'][:num]:
             title = entry['title']
             callback = lambda link=entry['link']: openSite(link)
-            buttons.append(Button(root, text=title, command=callback))
+            buttons.append(Button(frame, text=title, command=callback))
             buttons[-1].pack(padx=30, pady=15)
-        noMoreEntries.append(Label(root, text="No more entries!"))
+        noMoreEntries.append(Label(frame, text="No more entries!"))
         noMoreEntries[-1].pack(padx=5, pady=5)
 
     # Make button for adding RSS feeds to list
-    addRSSButton = Button(root, text="+", command=lambda: create_window())
+    addRSSButton = Button(toolbar, text="+", command=lambda: create_window())
     addRSSButton.pack(side="right")
-    refreshRSSButton = Button(root, text="↻", command=lambda: refreshRSS())
+    refreshRSSButton = Button(toolbar, text="↻", command=lambda: refreshRSS())
     refreshRSSButton.pack(side="right")
 
 
@@ -105,6 +107,13 @@ def addNewFeed():
         feed.destroy()
 
 
+def refreshcanvas(event):
+    canvas.configure(scrollregion=canvas.bbox("all"),
+                     width=event.width,
+                     height=event.height)
+    toolbar.configure(height=toolbar_height)
+
+
 def refreshRSS():
     global addRSSButton, refreshRSSButton, noMoreEntries
     global websites, buttons, urls, text
@@ -122,6 +131,24 @@ def refreshRSS():
     urls = []
     mainGUI(text)
 
+root = Tk()
+root.wm_title("PyRSS")
+root.geometry("{0}x{1}+0+0".format(width, height))
+
+canvas = Canvas(root)
+toolbar = Frame(root, height=toolbar_height, padx=20)
+frame = Frame(canvas, pady=40)
+scrollbar = Scrollbar(root)
+
+canvas.configure(yscrollcommand=scrollbar)
+scrollbar.configure(command=canvas.yview)
+frame.bind("<Configure>", refreshcanvas)
+
+scrollbar.pack(side="right", fill=Y)
+toolbar.place(y=0, height=toolbar_height, relwidth=1, anchor=NW)
+canvas.pack(side="bottom")
+# canvas.place(y=toolbar_height, relwidth=1)
+canvas.create_window((0, 0), window=frame)
 
 # Open sites.txt
 try:
