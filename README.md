@@ -10,5 +10,5 @@ PyRSS is a Python based RSS reader built on feedparser. I couldn't find an RSS r
   - To get started, click the "+" button in the lower left hand corner of the GUI and add an RSS feed
 
 ## Credits
-PyRSS is created by Caleb Jones ([@porglezomp](https://github.com/porglezomp)) and Blade Nelson([@powderblock](https://github.com/powderblock).
+PyRSS is created by Caleb Jones ([@porglezomp](https://github.com/porglezomp)) and Blade Nelson([@powderblock](https://github.com/powderblock)).
 It uses [feedparser](https://pypi.python.org/pypi/feedparser) to parse RSS feeds and [appdirs](https://pypi.python.org/pypi/appdirs/) to find the user-data-dir to store the list of feeds you're following.
