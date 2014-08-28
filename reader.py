@@ -1,12 +1,25 @@
 #!/usr/bin/python
-import feedparser, os, sys
+import feedparser
+import os
+import sys
+import errno
 
 try:
     import readline
 except:
     import pyreadline as readline
 
-path = os.path.join(os.path.expanduser('~'), 'sites.txt')
+import appdirs
+
+appname = "PyRSS"
+appauthor = "Adventurous"
+
+# If the data directory doesn't exist, create it
+datadir = appdirs.user_data_dir(appname, appauthor)
+if (not os.path.isdir(datadir)):
+    os.makedirs(datadir)
+# Path for saved RSS site feeds
+path = os.path.join(datadir, "sites.txt")
 
 def showRSS():
     try:
