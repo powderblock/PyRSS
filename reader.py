@@ -3,12 +3,6 @@ import feedparser
 import os
 import sys
 import errno
-
-try:
-    import readline
-except:
-    import pyreadline as readline
-
 import appdirs
 
 appname = "PyRSS"
@@ -21,37 +15,57 @@ if (not os.path.isdir(datadir)):
 # Path for saved RSS site feeds
 path = os.path.join(datadir, "sites.txt")
 
+text = []
+# URLs list is mostly used for checking to make sure we aren't showing the same feed twice (or more.)
+urls = []
+
 def showRSS():
+    # Open sites.txt
     try:
-        file = open(path, 'r')
-        print("File found at "+path)
-        for line in file:
-            site = {'name:': 'foo', 'site': line};
-            site = feedparser.parse(site['site'])
-            print(line)
-            for i in range(0, 3):
-                    print(site['entries'][i]['title'])
+        with open(path, 'r') as f:
+            # Get rid of all the newlines while you're reading it in
+            text = [x.strip() for x in f.readlines()]
+    except:
+        pass
+    for line in text:
+        line = line.strip()
+        # we don't want to process the same URL more than once
+        if line in urls:
+            continue
 
-            print("\n")
-        file.close()
-    except FileNotFoundError:
-        print("No file found at "+path)
+        urls.append(line)
+        # Feed line found in file to feedparser
+        site = feedparser.parse(line)
+        # Show the URL you are displaying entries from
+        print(line)
 
-def addRSS():
-    print("You pressed two!")
+        num = min(3, len(site['entries']))
+        # Top three entries from the RSS feed
+        for entry in site['entries'][:num]:
+            title = entry['title']
+            link = entry['link']
+            print(title)
+            print(link)
+        print("No more entries!\n")
 
-def liveRSS():
-    print("You pressed three!")
+def addNewFeed():
+    global text
+    # Open the file for appending and just write the new line to it
+    new = raw_input("Enter RSS feed to add: ")
+    # If you're not subscribed already, subscribe!
+    if (new not in text):
+        text.append(new)
+        with open(path, 'a') as f:
+            f.write(new + "\n")
+    showRSS()
 
 def menu():
     while True:
-        choice = raw_input("1.Show RSS feeds\n2.Add new RSS feed\n3.Live view RSS feed\n")
+        choice = raw_input("1.Show RSS feeds\n2.Add new RSS feed\n")
         if choice == "1": showRSS(); break
 
-        elif choice == "2": addRSS(); break
-
-        elif choice == "3": liveRSS(); break
+        elif choice == "2": addNewFeed(); break
 
         else: print("\n~That is not a valid option!~")
 
-showRSS()
+menu()
