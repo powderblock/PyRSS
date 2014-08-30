@@ -33,6 +33,7 @@ addRSSButton = None
 refreshRSSButton = None
 noMoreEntries = []
 websites = []
+websiteButtons = []
 
 
 def mainGUI(text):
@@ -62,10 +63,13 @@ def mainGUI(text):
         noMoreEntries.append(Label(root, text="No more entries!"))
         noMoreEntries[-1].pack(padx=5, pady=5)
 
-    # Make button for adding RSS feeds to list
-    addRSSButton = Button(root, text="+", command=lambda: create_window())
+    # Make button for adding RSS feeds to the file
+    addRSSButton = Button(root, text="+", command=lambda: addFeedWindow())
     addRSSButton.pack(side="right")
-    refreshRSSButton = Button(root, text="↻", command=lambda: refreshRSS())
+    # Make button for removing RSS feeds from the list
+    removeRSSButton = Button(root, text="-", command=lambda: removeFeedWindow())
+    removeRSSButton.pack(side="right")
+    refreshRSSButton = Button(root, text="↻", command=lambda: removeRSS())
     refreshRSSButton.pack(side="right")
 
 
@@ -74,7 +78,7 @@ def openSite(text):
 
 
 # Create new window for adding new RSS feed to file.
-def create_window():
+def addFeedWindow():
     global feed
     feed = Toplevel()
     feed.wm_title("Add new RSS feed")
@@ -86,6 +90,13 @@ def create_window():
     global newFeedGet
     newFeedGet = Entry(feed, width=50)
     newFeedGet.pack(side="left")
+
+def removeFeedWindow():
+    remove = Toplevel()
+    remove.wm_title("Remove RSS feed from File")
+    for i in range(0, len(urls)):
+        websiteButtons.append(Button(remove, text=urls[i], command=lambda: create_window()))
+        websiteButtons[-1].pack(padx=30, pady=15)
 
 
 def addNewFeed():
