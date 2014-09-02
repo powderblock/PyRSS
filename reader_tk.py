@@ -98,9 +98,9 @@ def removeFeed(site):
             del urls[i]
         else:
             continue
-        with open(path, 'w') as file:
+        with open(path, 'w') as f:
             for i in range(0, len(urls)):
-                file.write(urls[i]+"\n")
+                f.write(urls[i]+"\n")
     remove.destroy()
     refreshRSS()
 def removeFeedWindow():
@@ -133,13 +133,12 @@ def addNewFeed():
 
 
 def refreshRSS():
+    global websites, buttons, urls, text
+    global addRSSButton, refreshRSSButton, noMoreEntries
     with open(path, 'r') as f:
         # Get rid of all the newlines while you're reading it in
-        global text
         text = [x.strip() for x in f.readlines()]
-    global addRSSButton, refreshRSSButton, noMoreEntries
     # Remove button needs to be added, tried to add it but was getting global errors. Will come back to it later.
-    global websites, buttons, urls, text
     addRSSButton.pack_forget()
     refreshRSSButton.pack_forget()
     removeRSSButton.pack_forget()
