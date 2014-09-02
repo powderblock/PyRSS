@@ -33,6 +33,7 @@ addRSSButton = None
 refreshRSSButton = None
 noMoreEntries = []
 websites = []
+websiteButtons = []
 
 
 def mainGUI(text):
@@ -62,9 +63,13 @@ def mainGUI(text):
         noMoreEntries.append(Label(root, text="No more entries!"))
         noMoreEntries[-1].pack(padx=5, pady=5)
 
-    # Make button for adding RSS feeds to list
-    addRSSButton = Button(root, text="+", command=lambda: create_window())
+    # Make button for adding RSS feeds to the file
+    addRSSButton = Button(root, text="+", command=lambda: addFeedWindow())
     addRSSButton.pack(side="right")
+    # Make button for removing RSS feeds from the list
+    global removeRSSButton
+    removeRSSButton = Button(root, text="-", command=lambda: removeFeedWindow())
+    removeRSSButton.pack(side="right")
     refreshRSSButton = Button(root, text="↻", command=lambda: refreshRSS())
     refreshRSSButton.pack(side="right")
 
@@ -74,7 +79,7 @@ def openSite(text):
 
 
 # Create new window for adding new RSS feed to file.
-def create_window():
+def addFeedWindow():
     global feed
     feed = Toplevel()
     feed.wm_title("Add new RSS feed")
@@ -86,6 +91,28 @@ def create_window():
     global newFeedGet
     newFeedGet = Entry(feed, width=50)
     newFeedGet.pack(side="left")
+
+def removeFeed(site):
+    for i in range(0, len(urls)):
+        if site == urls[i]:
+            del urls[i]
+        else:
+            continue
+        with open(path, 'w') as f:
+            for i in range(0, len(urls)):
+                f.write(urls[i]+"\n")
+    remove.destroy()
+    refreshRSS()
+def removeFeedWindow():
+    global remove
+    remove = Toplevel()
+    remove.wm_title("Remove RSS feed from File")
+    for i in range(0, len(urls)):
+        website = urls[i]
+        # Create a var to hold TK command in, helps with callback looping problem (See button creation)
+        removeCommand = lambda websiteURL=website: removeFeed(websiteURL)
+        websiteButtons.append(Button(remove, text=website, command=removeCommand))
+        websiteButtons[-1].pack(padx=30, pady=15)
 
 
 def addNewFeed():
@@ -106,10 +133,15 @@ def addNewFeed():
 
 
 def refreshRSS():
-    global addRSSButton, refreshRSSButton, noMoreEntries
     global websites, buttons, urls, text
+    global addRSSButton, refreshRSSButton, noMoreEntries
+    with open(path, 'r') as f:
+        # Get rid of all the newlines while you're reading it in
+        text = [x.strip() for x in f.readlines()]
+    # Remove button needs to be added, tried to add it but was getting global errors. Will come back to it later.
     addRSSButton.pack_forget()
     refreshRSSButton.pack_forget()
+    removeRSSButton.pack_forget()
     for site in websites:
         site.pack_forget()
     for button in buttons:
