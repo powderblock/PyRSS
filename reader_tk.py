@@ -85,7 +85,7 @@ def addFeedWindow():
     feed.wm_title("Add new RSS feed")
 
     newFeedButton = Button(feed, text="Add New Feed",
-                           command=lambda: addNewFeed())
+                           command=lambda: addFeed())
     newFeedButton.pack(side="right")
 
     global newFeedGet
@@ -115,17 +115,18 @@ def removeFeedWindow():
         websiteButtons[-1].pack(padx=30, pady=15)
 
 
-def addNewFeed():
+def addFeed():
     global text
     # Open the file for appending and just write the new line to it
     new = newFeedGet.get()
     # If you're not subscribed already, subscribe!
-    if (new not in text):
-        text.append(new)
-        with open(path, 'a') as f:
-            f.write(new + "\n")
-        feed.destroy()
-        refreshRSS()
+    if new.strip() != "":
+        if (new not in text):
+            text.append(new)
+            with open(path, 'a') as f:
+                f.write(new + "\n")
+            feed.destroy()
+            refreshRSS()
     # Do this in two seperate places so that it can be executed before
     # refreshRSS() which is slow and makes it feel less responsive
     else:
@@ -155,6 +156,18 @@ def refreshRSS():
     mainGUI(text)
 
 
+# Functions to handle the hotkeys, need to pass "self" to these functions
+# kind of a kludge, will request code review later.
+# Just wanted to get it up and running
+def refreshRSSBind(self):
+    refreshRSS()
+
+def addFeedBind(self):
+    addFeedWindow()
+
+def removeFeedBind(self):
+    removeFeedWindow()
+
 # Open sites.txt
 try:
     with open(path, 'r') as f:
@@ -164,4 +177,7 @@ except:
     pass
 
 mainGUI(text)
+root.bind("-", removeFeedBind)
+root.bind("+", addFeedBind)
+root.bind('<F5>', refreshRSSBind)
 root.mainloop()
