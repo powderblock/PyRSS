@@ -101,8 +101,12 @@ def removeFeed(site):
         with open(path, 'w') as f:
             for i in range(0, len(urls)):
                 f.write(urls[i]+"\n")
-    remove.destroy()
+    killWindow(remove)
     refreshRSS()
+
+def killWindow(window):
+    window.destroy()
+
 def removeFeedWindow():
     global remove
     remove = Toplevel()
@@ -113,24 +117,35 @@ def removeFeedWindow():
         removeCommand = lambda websiteURL=website: removeFeed(websiteURL)
         websiteButtons.append(Button(remove, text=website, command=removeCommand))
         websiteButtons[-1].pack(padx=30, pady=15)
-
-
+        
+def invalidURL():
+    global invalidWindow 
+    invalidWindow = Toplevel()
+    invalidWindow .wm_title("Invalid Feed Entered")
+    error = Label(invalidWindow , text="The URL you have entered is invalid and or does not cotain any RSS entries.")
+    error.pack()
+    ok = Button(invalidWindow , text="Close", command=lambda: killWindow(invalidWindow ))
+    ok.pack(pady=5)
+        
 def addFeed():
     global text
     # Open the file for appending and just write the new line to it
     new = newFeedGet.get()
+    testRSS = feedparser.parse(str(new))
     # If you're not subscribed already, subscribe!
-    if new.strip() != "":
+    if len(testRSS.entries) > 0:
         if (new not in text):
             text.append(new)
             with open(path, 'a') as f:
                 f.write(new + "\n")
-            feed.destroy()
+            killWindow(feed)
             refreshRSS()
     # Do this in two seperate places so that it can be executed before
     # refreshRSS() which is slow and makes it feel less responsive
     else:
-        feed.destroy()
+        invalidURL()
+        print("invalidURL() called")
+        killWindow(feed)
 
 
 def refreshRSS():
@@ -139,7 +154,6 @@ def refreshRSS():
     with open(path, 'r') as f:
         # Get rid of all the newlines while you're reading it in
         text = [x.strip() for x in f.readlines()]
-    # Remove button needs to be added, tried to add it but was getting global errors. Will come back to it later.
     addRSSButton.pack_forget()
     refreshRSSButton.pack_forget()
     removeRSSButton.pack_forget()
@@ -158,7 +172,6 @@ def refreshRSS():
 
 # Functions to handle the hotkeys, need to pass "self" to these functions
 # kind of a kludge, will request code review later.
-# Just wanted to get it up and running
 def refreshRSSBind(self):
     refreshRSS()
 
@@ -177,6 +190,7 @@ except:
     pass
 
 mainGUI(text)
+# Hot key actions
 root.bind("-", removeFeedBind)
 root.bind("+", addFeedBind)
 root.bind('<F5>', refreshRSSBind)
