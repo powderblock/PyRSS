@@ -35,7 +35,6 @@ noMoreEntries = []
 websites = []
 websiteButtons = []
 
-
 def mainGUI(text):
     global addRSSButton, refreshRSSButton, noMoreEntries
     global websites, buttons, urls
@@ -73,10 +72,8 @@ def mainGUI(text):
     refreshRSSButton = Button(root, text="↻", command=lambda: refreshRSS())
     refreshRSSButton.pack(side="right")
 
-
 def openSite(text):
     webbrowser.get().open(text)
-
 
 # Create new window for adding new RSS feed to file.
 def addFeedWindow():
@@ -117,7 +114,7 @@ def removeFeedWindow():
         removeCommand = lambda websiteURL=website: removeFeed(websiteURL)
         websiteButtons.append(Button(remove, text=website, command=removeCommand))
         websiteButtons[-1].pack(padx=30, pady=15)
-        
+
 def invalidURL():
     global invalidWindow 
     invalidWindow = Toplevel()
@@ -126,7 +123,7 @@ def invalidURL():
     error.pack()
     ok = Button(invalidWindow , text="Close", command=lambda: killWindow(invalidWindow ))
     ok.pack(pady=5)
-        
+
 def addFeed():
     global text
     # Open the file for appending and just write the new line to it
@@ -144,9 +141,7 @@ def addFeed():
     # refreshRSS() which is slow and makes it feel less responsive
     else:
         invalidURL()
-        print("invalidURL() called")
         killWindow(feed)
-
 
 def refreshRSS():
     global websites, buttons, urls, text
@@ -168,7 +163,6 @@ def refreshRSS():
     buttons = []
     urls = []
     mainGUI(text)
-
 
 # Functions to handle the hotkeys, need to pass "self" to these functions
 # kind of a kludge, will request code review later.
