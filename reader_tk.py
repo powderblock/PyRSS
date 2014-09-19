@@ -72,8 +72,10 @@ def mainGUI(text):
     refreshRSSButton = Button(root, text="↻", command=lambda: refreshRSS())
     refreshRSSButton.pack(side="right")
 
+
 def openSite(text):
     webbrowser.get().open(text)
+
 
 # Create new window for adding new RSS feed to file.
 def addFeedWindow():
@@ -89,6 +91,7 @@ def addFeedWindow():
     newFeedGet = Entry(feed, width=50)
     newFeedGet.pack(side="left")
 
+
 def removeFeed(site):
     for i in range(0, len(urls)):
         if site == urls[i]:
@@ -101,8 +104,24 @@ def removeFeed(site):
     killWindow(remove)
     refreshRSS()
 
+
 def killWindow(window):
     window.destroy()
+
+
+def reWrite():
+    if (new not in text):
+        urls.append(new)
+        text.append(new)
+        with open(path, 'a') as f:
+            f.write(new + "\n")
+        refreshRSS()
+
+
+def addItAnyway():
+    reWrite()
+    killWindow(ok)
+
 
 def removeFeedWindow():
     global remove
@@ -115,33 +134,34 @@ def removeFeedWindow():
         websiteButtons.append(Button(remove, text=website, command=removeCommand))
         websiteButtons[-1].pack(padx=30, pady=15)
 
+
 def invalidURL():
-    global invalidWindow 
+    global invalidWindow, ok, no
     invalidWindow = Toplevel()
     invalidWindow .wm_title("Invalid Feed Entered")
-    error = Label(invalidWindow , text="The URL you have entered is invalid and or does not cotain any RSS entries.")
+    error = Label(invalidWindow , text="The URL you have entered may not be a valid RSS feed. Do you want to add it anyway?")
     error.pack()
-    ok = Button(invalidWindow , text="Close", command=lambda: killWindow(invalidWindow ))
-    ok.pack(pady=5)
+    ok = Button(invalidWindow , text="Yes, add it anyway", command=lambda: addItAnyway())
+    no = Button(invalidWindow , text="No, don't add it", command=lambda: killWindow(invalidWindow))
+    ok.pack(padx=3, pady=5, side="left")
+    no.pack(padx=3, pady=5, side="right")
+
 
 def addFeed():
-    global text
+    global text, new
     # Open the file for appending and just write the new line to it
     new = newFeedGet.get()
     testRSS = feedparser.parse(str(new))
     # If you're not subscribed already, subscribe!
     if len(testRSS.entries) > 0:
-        if (new not in text):
-            text.append(new)
-            with open(path, 'a') as f:
-                f.write(new + "\n")
-            killWindow(feed)
-            refreshRSS()
+        rewrite()
+        killWindow(feed)
     # Do this in two seperate places so that it can be executed before
     # refreshRSS() which is slow and makes it feel less responsive
     else:
         invalidURL()
         killWindow(feed)
+
 
 def refreshRSS():
     global websites, buttons, urls, text
@@ -164,16 +184,20 @@ def refreshRSS():
     urls = []
     mainGUI(text)
 
+
 # Functions to handle the hotkeys, need to pass "self" to these functions
 # kind of a kludge, will request code review later.
 def refreshRSSBind(self):
     refreshRSS()
 
+
 def addFeedBind(self):
     addFeedWindow()
 
+
 def removeFeedBind(self):
     removeFeedWindow()
+
 
 # Open sites.txt
 try:
